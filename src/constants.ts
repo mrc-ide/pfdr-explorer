@@ -44,6 +44,7 @@ export const PREVALENCE_COLUMNS = {
   NO_OF_INFORMING_SURVEYS: "no_of_informing_surveys", // Gives a survey id
   SD: "SD",
   UPPER_95: "upper_95",
+  VARIANT: "variant",
 } as const;
 
 const staveFiles = await readdir(join(config.dataDir, "stave"), { withFileTypes: true });

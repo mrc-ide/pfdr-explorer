@@ -136,6 +136,7 @@ describe('executeParquetQuery SQL generation', () => {
     });
   });
 
+  // TODO - remove this test after rewrite
   it('sends a 400 after getting a partial bounding box', async () => {
     await expect(
       executeParquetQuery(
@@ -147,6 +148,7 @@ describe('executeParquetQuery SQL generation', () => {
     expect(db.prepare).not.toHaveBeenCalled();
   });
 
+  // TODO - remove this test after rewrite
   it('sends a 400 after getting an invalid bounding box', async () => {
     await expect(
       executeParquetQuery(
@@ -158,6 +160,7 @@ describe('executeParquetQuery SQL generation', () => {
     expect(db.prepare).not.toHaveBeenCalled();
   });
 
+  // TODO - remove this test after rewrite
   it('sends a 400 after getting a bounding box that crosses the antimeridian', async () => {
     await expect(
       executeParquetQuery(
@@ -182,6 +185,7 @@ describe('executeParquetQuery SQL generation', () => {
     expect(db.bind).toHaveBeenCalledWith({});
   });
 
+  // TODO - remove this test after rewrite
   it('rejects a requested property if it belongs to a different parquet schema', async () => {
     await expect(
       executeParquetQuery(

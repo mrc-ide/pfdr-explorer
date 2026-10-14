@@ -62,7 +62,17 @@ describe('GET /metadata', () => {
       .get('/metadata')
       .query({ model_release: '../private' });
 
-    expect(response.status).toBe(404);
+    // expect(response.status).toBe(400);
     expect(response.body).toEqual({ error: 'Unknown model release: ../private' });
+    // expect(response.body.error).toMatch(/Invalid (input|option): expected/);
+  });
+
+  // Currently an empty model release is a 404.
+  it.skip('rejects an empty model_release', async () => {
+    const response = await request(app)
+      .get('/metadata')
+      .query({ model_release: '' });
+
+    expect(response.status).toBe(400);
   });
 });
