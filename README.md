@@ -27,7 +27,7 @@ The JSON data files (`data/model/<version>/metadata.json` and `data/admin0-regio
 
 0. /schema
 
-Returns a [JSON Schema](https://json-schema.org/) describing the query parameters accepted by each endpoint, keyed by endpoint path (`/metadata`, `/surveys`, `/prevalences`). This includes which parameters are required, their formats, and the available releases and their defaults. Cross-parameter rules (e.g. that `date_from` may not be later than `date_to`, or which `properties` are available for a given release) are not expressible in the schema, and are enforced only by the endpoints themselves.
+Returns a [JSON Schema](https://json-schema.org/) describing the query parameters accepted by each endpoint, keyed by endpoint path (`/metadata`, `/surveys`, `/prevalences`). This includes which parameters are required, their formats, the requestable properties, and the available releases and their defaults. Cross-parameter rules (e.g. that `date_from` may not be later than `date_to`, or which `properties` are available for a given release) are not expressible in the schema, and are enforced only by the endpoints themselves.
 
 1. /metadata
 

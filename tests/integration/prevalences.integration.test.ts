@@ -163,7 +163,7 @@ describe('GET /prevalences', () => {
       .query({ admin_level: '1' });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toContain('Invalid input: expected string or array of strings, received undefined\n  → at properties');
+    expect(response.body.error).toContain('Invalid input\n  → at properties');
     expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at gene');
     expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at mutation');
   });
@@ -219,7 +219,7 @@ describe('GET /prevalences', () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toContain('Invalid option: expected one of');
+    expect(response.body.error).toContain('Invalid property requested: password');
   });
 
   // Errors are reported as `{ error: z.prettifyError(zodError) }`, which prefixes each

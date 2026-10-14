@@ -8,30 +8,36 @@ import { defaultDataRelease, latestModelRelease } from '../utils/releases.ts';
 // Cross-field checks only run once every field is individually valid.
 const whenFieldsValid = { when: (payload: z.core.ParsePayload) => payload.issues.length === 0 };
 
-const singleValue = (param: string) => z.string().min(1).refine(
-  (value) => !value.includes(","),
-  `Query parameter "${param}" must be a single string`,
-);
+const singleValue = (param: string, description: string) => z.string()
+  .min(1)
+  .regex(/^[^,]*$/, `Query parameter "${param}" must be a single string`)
+  .describe(description);
 
 // A list may be given as comma-separated values and/or as repeated parameters.
-const list = z.union([z.string(), z.array(z.string())], {
-  error: (issue) => `Invalid input: expected string or array of strings, received ${typeof issue.input}`,
-})
+const list = z.union([z.string(), z.array(z.string())])
   .transform((value) => [value].flat().flatMap((item) => item.split(",")));
 
 // Requested properties are matched case-insensitively, and replaced with the canonical
 // column name, so that only known-correct column names reach the SQL query.
 const properties = (requestable: Column[]) => {
   const canonicalNames = new Map(requestable.map((column) => [column.toLowerCase(), column]));
+  const column = `(?:${requestable.join("|")})`;
   return list
     .transform((items) => items
       .filter((item) => item !== "")
       .map((item) => canonicalNames.get(item.toLowerCase()) ?? item))
-    .pipe(z.array(z.enum(requestable)).min(1))
-    .describe(
-      "Columns to return, comma-separated or as repeated parameters (case-insensitive). " +
-      "Which columns are available depends on the release (and for prevalences, the admin level).",
-    );
+    .pipe(z.array(z.enum(requestable, { error: (issue) => `Invalid property requested: ${issue.input}` })).min(1))
+    // The JSON Schema can't be inferred through the transform, so is given explicitly.
+    // (Case-insensitive matching is not expressible in JSON Schema, so only canonical names are listed.)
+    .meta({
+      description:
+        "Columns to return, comma-separated or as repeated parameters (case-insensitive). " +
+        "Not every column is available for every release (nor, for prevalences, every admin level).",
+      anyOf: [
+        { type: "string", pattern: `^${column}(?:,${column})*$` },
+        { type: "array", items: { type: "string", enum: requestable } },
+      ],
+    });
 };
 
 const checkPropertiesAvailable = (
@@ -45,8 +51,8 @@ const checkPropertiesAvailable = (
   }
 };
 
-const isoDate = z.iso.date().describe("YYYY-MM-DD");
-const yearMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).describe("YYYY-MM");
+const isoDate = z.iso.date();
+const yearMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 
 const isDateRangeOrdered = (query: { date_from?: string, date_to?: string }) =>
   !query.date_from || !query.date_to || query.date_from <= query.date_to;
@@ -63,6 +69,7 @@ const dataRelease = z.enum(dataVersions).default(defaultDataRelease)
 
 const bboxFormat = "Expected format: min_lng,min_lat,max_lng,max_lat";
 const coordinate = /^-?\d+(\.\d+)?$/;
+const coordinates = `${coordinate.source.slice(1, -1)}(?:,${coordinate.source.slice(1, -1)})*`;
 
 const bbox = list.transform((coords, ctx): BoundingBox => {
   const invalid = (message: string) => {
@@ -83,7 +90,13 @@ const bbox = list.transform((coords, ctx): BoundingBox => {
     return invalid(`Bounding box should not cross antimeridian. ${bboxFormat}`);
   }
   return { minLng, minLat, maxLng, maxLat };
-}).describe(bboxFormat);
+}).meta({
+  description: `Bounding box to restrict results to. ${bboxFormat}. Latitudes must be within ±90 and longitudes within ±180.`,
+  anyOf: [
+    { type: "string", pattern: `^${coordinates}$` },
+    { type: "array", items: { type: "string", pattern: `^${coordinates}$` } },
+  ],
+});
 
 export const metadataQuerySchema = z.object({
   model_release: modelRelease,
@@ -91,12 +104,12 @@ export const metadataQuerySchema = z.object({
 
 export const surveysQuerySchema = z.object({
   properties: properties(endpointConfigs["/surveys"].requestableProperties),
-  [SURVEY_COLUMNS.GENE]: singleValue(SURVEY_COLUMNS.GENE),
-  [SURVEY_COLUMNS.MUTATION]: singleValue(SURVEY_COLUMNS.MUTATION),
-  [SURVEY_COLUMNS.SURVEY_ID]: singleValue(SURVEY_COLUMNS.SURVEY_ID).optional(),
+  [SURVEY_COLUMNS.GENE]: singleValue(SURVEY_COLUMNS.GENE, "Gene to filter by, e.g. crt."),
+  [SURVEY_COLUMNS.MUTATION]: singleValue(SURVEY_COLUMNS.MUTATION, "Mutation to filter by, e.g. 76K."),
+  [SURVEY_COLUMNS.SURVEY_ID]: singleValue(SURVEY_COLUMNS.SURVEY_ID, "Survey to filter by.").optional(),
   data_release: dataRelease,
-  date_from: isoDate.optional(),
-  date_to: isoDate.optional(),
+  date_from: isoDate.describe("Earliest collection day to include (YYYY-MM-DD).").optional(),
+  date_to: isoDate.describe("Latest collection day to include (YYYY-MM-DD).").optional(),
   bbox: bbox.optional(),
 }).strict()
   .refine(isDateRangeOrdered, dateRangeOrderError)
@@ -104,20 +117,23 @@ export const surveysQuerySchema = z.object({
     checkPropertiesAvailable(query.properties, surveyColumns[query.data_release], ctx);
   }, whenFieldsValid);
 
+const regionDescription = (level: number) =>
+  `ID of an admin${level} region to restrict results to. Requires admin_level of at least ${level}.`;
+
 const regionParams = [PREVALENCE_COLUMNS.ADMIN0, PREVALENCE_COLUMNS.ADMIN1, PREVALENCE_COLUMNS.ADMIN2] as const;
 
 export const prevalencesQuerySchema = z.object({
   properties: properties(endpointConfigs["/prevalences"].requestableProperties),
-  [PREVALENCE_COLUMNS.GENE]: singleValue(PREVALENCE_COLUMNS.GENE),
-  [PREVALENCE_COLUMNS.MUTATION]: singleValue(PREVALENCE_COLUMNS.MUTATION),
-  admin_level: z.enum(adminLevels),
-  [PREVALENCE_COLUMNS.ADMIN0]: singleValue(PREVALENCE_COLUMNS.ADMIN0).optional(),
-  [PREVALENCE_COLUMNS.ADMIN1]: singleValue(PREVALENCE_COLUMNS.ADMIN1).optional(),
-  [PREVALENCE_COLUMNS.ADMIN2]: singleValue(PREVALENCE_COLUMNS.ADMIN2).optional(),
+  [PREVALENCE_COLUMNS.GENE]: singleValue(PREVALENCE_COLUMNS.GENE, "Gene to filter by, e.g. crt."),
+  [PREVALENCE_COLUMNS.MUTATION]: singleValue(PREVALENCE_COLUMNS.MUTATION, "Mutation to filter by, e.g. 76K."),
+  admin_level: z.enum(adminLevels).describe("Administrative level of the regions to return results for."),
+  [PREVALENCE_COLUMNS.ADMIN0]: singleValue(PREVALENCE_COLUMNS.ADMIN0, regionDescription(0)).optional(),
+  [PREVALENCE_COLUMNS.ADMIN1]: singleValue(PREVALENCE_COLUMNS.ADMIN1, regionDescription(1)).optional(),
+  [PREVALENCE_COLUMNS.ADMIN2]: singleValue(PREVALENCE_COLUMNS.ADMIN2, regionDescription(2)).optional(),
   model_release: modelRelease,
-  [PREVALENCE_COLUMNS.DATE]: yearMonth.optional(),
-  date_from: yearMonth.optional(),
-  date_to: yearMonth.optional(),
+  [PREVALENCE_COLUMNS.DATE]: yearMonth.describe("Month to filter by (YYYY-MM).").optional(),
+  date_from: yearMonth.describe("Earliest month to include (YYYY-MM).").optional(),
+  date_to: yearMonth.describe("Latest month to include (YYYY-MM).").optional(),
 }).strict()
   .refine(isDateRangeOrdered, dateRangeOrderError)
   .refine(

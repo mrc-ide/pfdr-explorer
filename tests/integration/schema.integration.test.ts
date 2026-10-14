@@ -28,14 +28,23 @@ describe('GET /schema', () => {
     expect(response.body['/prevalences'].required).toEqual(['properties', 'gene', 'mutation', 'admin_level']);
   });
 
-  it('describes properties as a list of strings', async () => {
+  it('lists the requestable properties, given comma-separated or as repeated parameters', async () => {
+    const response = await request(app).get('/schema');
+    const [commaSeparated, repeated] = response.body['/prevalences'].properties.properties.anyOf;
+
+    expect(repeated.items.enum).toEqual(expect.arrayContaining(['median', 'SD', 'admin2']));
+    expect(repeated.items.enum).not.toContain('password');
+    expect('median,SD,admin2').toMatch(new RegExp(commaSeparated.pattern));
+    expect('median,password').not.toMatch(new RegExp(commaSeparated.pattern));
+  });
+
+  it('describes every parameter', async () => {
     const response = await request(app).get('/schema');
 
-    for (const endpoint of ['/surveys', '/prevalences']) {
-      expect(response.body[endpoint].properties.properties.anyOf).toEqual([
-        { type: 'string' },
-        { type: 'array', items: { type: 'string' } },
-      ]);
+    for (const schema of Object.values<{ properties: Record<string, { description?: string }> }>(response.body)) {
+      for (const param of Object.values(schema.properties)) {
+        expect(param.description).toBeTruthy();
+      }
     }
   });
 

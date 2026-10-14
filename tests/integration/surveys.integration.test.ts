@@ -170,7 +170,7 @@ describe('GET /surveys', () => {
         .query({ ...baseQuery, mutation: undefined });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toContain('Invalid input: expected string or array of strings, received undefined\n  → at properties');
+      expect(response.body.error).toContain('Invalid input\n  → at properties');
       expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at mutation');
     });
 
