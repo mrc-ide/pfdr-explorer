@@ -163,12 +163,9 @@ describe('GET /prevalences', () => {
       .query({ admin_level: '1' });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe(
-      'Missing required query parameters: properties, gene, mutation',
-    );
-    // expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at properties');
-    // expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at gene');
-    // expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at mutation');
+    expect(response.body.error).toContain('Invalid input: expected string or array of strings, received undefined\n  → at properties');
+    expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at gene');
+    expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at mutation');
   });
 
   it('uses the latest model release when none is specified', async () => {
@@ -189,9 +186,8 @@ describe('GET /prevalences', () => {
       .get('/prevalences')
       .query({ ...baseQuery, model_release: '../private', admin_level: '0', properties: 'median' });
 
-    // expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: 'Unknown model release: ../private' });
-    // expect(response.body.error).toMatch(/Invalid (input|option): expected/);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/Invalid (input|option): expected/);
   });
 
   it.each([
@@ -209,7 +205,7 @@ describe('GET /prevalences', () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe('You cannot request results at a less granular level than that of the containing region.');
+    expect(response.body.error).toContain('You cannot request results at a less granular level than that of the containing region.');
   });
 
   it('rejects an invalid requested property', async () => {
@@ -223,13 +219,11 @@ describe('GET /prevalences', () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: 'Invalid property requested: password' });
-    // expect(response.body.error).toContain('Invalid option: expected one of');
+    expect(response.body.error).toContain('Invalid option: expected one of');
   });
 
-  // Commented-out expectations give Zod's default messages for cases where our current
-  // custom messages differ. They assume the error handler responds with
-  // `{ error: z.prettifyError(zodError) }`, hence `toContain`/`toMatch` rather than `toBe`.
+  // Errors are reported as `{ error: z.prettifyError(zodError) }`, which prefixes each
+  // message with '✖' and follows it with the path, hence `toContain`/`toMatch` rather than `toBe`.
   const validQuery = { ...baseQuery, admin_level: '2', properties: 'median' };
 
   describe('single-value query parameters', () => {
@@ -239,7 +233,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, [param]: 'a,b' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`Query parameter "${param}" must be a single string`);
+      expect(response.body.error).toContain(`Query parameter "${param}" must be a single string`);
     });
 
     const receivedArray = /Invalid input: expected string, received array/;
@@ -256,14 +250,13 @@ describe('GET /prevalences', () => {
       { param: 'date', value: '2024-01', zodError: receivedArray },
       { param: 'date_from', value: '2024-01', zodError: receivedArray },
       { param: 'date_to', value: '2024-01', zodError: receivedArray },
-    ])('rejects repeated values for $param', async ({ param, value }) => {
+    ])('rejects repeated values for $param', async ({ param, value, zodError }) => {
       const response = await request(app)
         .get('/prevalences')
         .query({ ...validQuery, [param]: [value, value] });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`Query parameter "${param}" must be a single string`);
-      // expect(response.body.error).toMatch(zodError);
+      expect(response.body.error).toMatch(zodError);
     });
   });
 
@@ -274,18 +267,16 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, properties: ',' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('At least one property must be requested.');
-      // expect(response.body.error).toContain('Too small: expected array to have >=1 items');
+      expect(response.body.error).toContain('Too small: expected array to have >=1 items');
     });
 
-    it('rejects a property with the wrong case', async () => {
+    it('accepts a property regardless of case', async () => {
       const response = await request(app)
         .get('/prevalences')
-        .query({ ...validQuery, properties: 'sd' });
+        .query({ ...validQuery, properties: 'sd,MEDIAN' });
 
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Invalid property requested: sd');
-      // expect(response.body.error).toContain('Invalid option: expected one of');
+      expect(response.status).toBe(200);
+      expect(Object.keys(response.body)).toEqual(['SD', 'median']);
     });
 
     it('rejects an allowed property absent from the parquet file', async () => {
@@ -294,7 +285,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, admin_level: '1', properties: 'admin2' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Invalid property requested: admin2');
+      expect(response.body.error).toContain('Invalid property requested: admin2');
     });
 
     it.each([
@@ -318,8 +309,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, [parameter]: '2024-05-01' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`Invalid date for parameter '${parameter}'. Expected YYYY-MM.`);
-      // expect(response.body.error).toContain('Invalid string: must match pattern');
+      expect(response.body.error).toContain('Invalid string: must match pattern');
     });
 
     it.each(['date', 'date_from', 'date_to'])('rejects an invalid date for %s', async (parameter) => {
@@ -328,8 +318,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, [parameter]: '2026-99' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`Invalid date for parameter '${parameter}'. Expected YYYY-MM.`);
-      // expect(response.body.error).toContain('Invalid string: must match pattern');
+      expect(response.body.error).toContain('Invalid string: must match pattern');
     });
 
     it.each(['date_from', 'date_to'])('does not requires %s with the other date range parameter', async (parameter) => {
@@ -350,7 +339,7 @@ describe('GET /prevalences', () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`'date_from' cannot be later than 'date_to'.`);
+      expect(response.body.error).toContain(`'date_from' cannot be later than 'date_to'.`);
     });
   });
 
@@ -361,8 +350,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, admin_level: undefined });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Missing required query parameters: admin_level');
-      // expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
+      expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
     });
 
     it('requires admin_level to be non-empty', async () => {
@@ -371,8 +359,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, admin_level: '' });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe('Missing required query parameters: admin_level');
-      // expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
+      expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
     });
 
     it.each(['3', '01', '1.0'])('rejects an unsupported admin level: %s', async (adminLevel) => {
@@ -381,8 +368,7 @@ describe('GET /prevalences', () => {
         .query({ ...validQuery, admin_level: adminLevel });
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toBe(`Invalid admin level requested: ${adminLevel}`);
-      // expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
+      expect(response.body.error).toContain('Invalid option: expected one of "0"|"1"|"2"');
     });
 
     it('accepts a valid level and containing region', async () => {
@@ -395,8 +381,7 @@ describe('GET /prevalences', () => {
   });
 
   describe('empty optional query parameters', () => {
-    // Currently empty optional parameters are ignored, except empty releases, which are 404s.
-    it.skip.each([
+    it.each([
       'model_release',
       'admin0',
       'admin1',
@@ -411,5 +396,14 @@ describe('GET /prevalences', () => {
 
       expect(response.status).toBe(400);
     });
+  });
+
+  it.each(['bbox', 'data_release', 'unknown'])('rejects an unrecognized parameter: %s', async (param) => {
+    const response = await request(app)
+      .get('/prevalences')
+      .query({ ...validQuery, [param]: 'x' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain(`Unrecognized key: "${param}"`);
   });
 });

@@ -9,11 +9,25 @@ In general, when new releases of model outputs or of survey data are created, th
 
 ## Endpoints
 
-There are three endpoints, all read-only, which provide customisable slices of the data, which is read from parquet files.
+There are three data endpoints, all read-only, which provide customisable slices of the data, which is read from parquet files. A fourth endpoint, `/schema`, describes the query parameters that the others accept.
 
 The `/surveys` and `/prevalences` endpoints correspond to the two kinds of data referred to above. They share a common request format* whereby the query parameter `properties` specifies which parquet columns should be returned per entry, while several other query parameters are used to filter the data. To a first approximation, this is translated into an SQL query of the form `SELECT <properties> FROM <parquet file> WHERE <filters>`, though not all filters are expressible as `WHERE` clauses (e.g. they may instead entail reading a different source parquet file). By the use of these query parameters, we enable clients to flexibly thin the response sizes to precisely those rows and columns that are required.
 
-*This is controlled by the const `endpointConfigs` in `src/utils/endpoints.ts`. 
+*Query parameters are validated and parsed by the [Zod](https://zod.dev) schemas in `src/schemas/query.ts`; the requestable and filterable columns are configured by the const `endpointConfigs` in `src/utils/endpoints.ts`.
+
+### Validation
+
+Invalid requests receive a 400 response of the form `{ "error": "<description of every problem found>" }`. In particular:
+- Unrecognised query parameters are rejected, as are empty values (e.g. `gene=`).
+- Unknown `model_release`/`data_release` values are rejected.
+- Parameters that filter on a single value (e.g. `gene`, `mutation`, `admin0`, dates) may not be repeated or comma-separated.
+- `properties` may be given comma-separated and/or as repeated parameters, and is case-insensitive (e.g. `sd` returns the column `SD`). Each property must be a column of the parquet file that will be queried, which depends on the release (and, for `/prevalences`, on `admin_level`).
+
+The JSON data files (`data/model/<version>/metadata.json` and `data/admin0-region-metadata.json`) are validated when the server starts, so the server will not start if any of them is malformed, or if a model release depends on a data release that does not exist.
+
+0. /schema
+
+Returns a [JSON Schema](https://json-schema.org/) describing the query parameters accepted by each endpoint, keyed by endpoint path (`/metadata`, `/surveys`, `/prevalences`). This includes which parameters are required, their formats, and the available releases and their defaults. Cross-parameter rules (e.g. that `date_from` may not be later than `date_to`, or which `properties` are available for a given release) are not expressible in the schema, and are enforced only by the endpoints themselves.
 
 1. /metadata
 
@@ -109,7 +123,9 @@ GET /surveys?
   &properties=survey_id,lat,lng,collection_day,denominator
 ```
 
-The bbox (bounding box) format is: min lng, min lat, max lng, max lat.
+The bbox (bounding box) format is: min lng, min lat, max lng, max lat. Latitudes must be within ±90 and longitudes within ±180, and the bounding box may not cross the antimeridian (i.e. min lng must not exceed max lng).
+
+Dates (`date_from`, `date_to`) are in `YYYY-MM-DD` format.
 
 response:
 ```jsonc
@@ -131,7 +147,7 @@ An endpoint for querying model outputs, as stored in `/data/model/<version>/admi
 
 The optional `model_release` parameter defaults to the latest model release.
 
-The `admin_level` query parameter determines the granularity of the model outputs, while the query parameters `admin0`, `admin1` and `admin2` scope the results to a particular region. Thus for example, to request results within the `admin0` region of Mali (`MLI`), at the finest level of granularity:
+The `admin_level` query parameter determines the granularity of the model outputs, while the query parameters `admin0`, `admin1` and `admin2` scope the results to a particular region (which may not be more granular than `admin_level`). Dates (`date`, `date_from`, `date_to`) are in `YYYY-MM` format. Thus for example, to request results within the `admin0` region of Mali (`MLI`), at the finest level of granularity:
 
 request:
 ```

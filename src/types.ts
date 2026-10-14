@@ -11,3 +11,10 @@ export interface Mutation {
 export type SurveyColumn = typeof SURVEY_COLUMNS[keyof typeof SURVEY_COLUMNS];
 export type PrevalenceColumn = typeof PREVALENCE_COLUMNS[keyof typeof PREVALENCE_COLUMNS];
 export type Column = SurveyColumn | PrevalenceColumn;
+
+export interface BoundingBox {
+  minLng: number;
+  minLat: number;
+  maxLng: number;
+  maxLat: number;
+}
