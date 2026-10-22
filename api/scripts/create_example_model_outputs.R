@@ -15,6 +15,8 @@ library(tibble)
 library(tidyr)
 library(variantstring)
 
+here::i_am("scripts/create_example_model_outputs.R")
+
 # Constants
 
 stave_version <- "v1.0.0"

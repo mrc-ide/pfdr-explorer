@@ -13,6 +13,8 @@ library(STAVE)
 library(variantstring)
 library(here)
 
+here::i_am("scripts/process_stave.R")
+
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) == 0) {
   cli_abort(c(

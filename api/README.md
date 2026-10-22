@@ -1,0 +1,269 @@
+# PfDR Explorer
+
+This repo contains an API serving two kinds of data to be rendered by PfDR Explorer:
+
+1) data points of surveys of genetic markers, which come to us stored in the [STAVE](https://mrc-ide.github.io/STAVE/index.html) schema;
+2) and a surface of model outputs imputed from the survey data, which are essentially interpolated prevalences of the different genetic markers per region. These are provided at three levels of granularity: admin levels 0, 1, and 2.
+
+In general, when new releases of model outputs or of survey data are created, this is treated additively: that is, we will intentionally keep around older versions. These may be requested using query parameters `model_release`/`data_release`. Each model release has a dependency on a specific data release. 
+
+## Endpoints
+
+There are three endpoints, all read-only, which provide customisable slices of the data, which is read from parquet files.
+
+The `/surveys` and `/prevalences` endpoints correspond to the two kinds of data referred to above. They share a common request format* whereby the query parameter `properties` specifies which parquet columns should be returned per entry, while several other query parameters are used to filter the data. To a first approximation, this is translated into an SQL query of the form `SELECT <properties> FROM <parquet file> WHERE <filters>`, though not all filters are expressible as `WHERE` clauses (e.g. they may instead entail reading a different source parquet file). By the use of these query parameters, we enable clients to flexibly thin the response sizes to precisely those rows and columns that are required.
+
+*This is controlled by the const `endpointConfigs` in `src/utils/endpoints.ts`. 
+
+1. /metadata
+
+This endpoint returns:
+- All available model releases
+- The global/initial bounding box for the map
+- Metadata pertaining to a specific model release (this is specified by an optional `model_release` parameter, which defaults to latest):
+  - The model release label ('version')
+  - The corresponding data release and shapefile source for the model release (under the 'dependencies' property)
+  - The available genes for the model release, each with their available 'mutations' (encoding position and allele), and the range of dates for which prevalence is modelled for each mutation.
+
+Example:
+
+request:
+`GET /metadata`
+
+response:
+```jsonc
+{
+  "model_releases": ["v1", "v2"],
+  "prevalences": {
+    "version": "v1",
+    "dependencies": {
+      "data_release": "v1.0.0",
+      "shapefile_source": "gadm41",
+    },
+    "variants": [
+      {
+        "gene": "k13",
+        "mutations": [
+          {
+            "mutation": "469Y",
+            "date_range": {
+              "start": "2004-05-01",
+              "end": "2030-09-01",
+            },
+          },
+          {
+            "mutation": "469F",
+            "date_range": {
+              "start": "2004-05-01",
+              "end": "2030-09-01",
+            },
+          },
+        ],
+      },
+      {
+        "gene": "crt",
+        "mutations": [
+          {
+            "mutation": "76K",
+            "date_range": {
+              "start": "2004-05-01",
+              "end": "2030-09-01",
+            },
+          },
+        ],
+      }
+    ]
+  },
+  "bounds": {
+    "min": {
+      "lng": -70.0635,
+      "lat": 12.4124
+    },
+    "max": {
+      "lng": -69.8654,
+      "lat": 12.624
+    }
+  },
+}
+```
+
+2. /surveys
+
+An endpoint for querying survey data, as stored in `/data/stave/<version>/survey_data.parquet`. Responses are in row format.
+
+The optional `data_release` parameter defaults to the data release that the latest model release depends on.
+
+Note that this endpoint actually returns multiple entries per STAVE survey - that is, we have one entry per variant per STAVE survey. Thus these objects match the STAVE concept of a '[count](https://mrc-ide.github.io/STAVE/articles/howto_counts_table.html)' (which counts a particular mutation) a bit more closely than the concept of a '[survey](https://mrc-ide.github.io/STAVE/articles/howto_surveys_table.html)' (which would collect multiple genetic variants).
+
+Example:
+
+request:
+```
+GET /surveys?
+  &data_release=v1.0.0
+  &date_from=2010-01-01
+  &date_to=2010-02-01
+  &gene=k13
+  &mutation=469Y
+  &bbox=-9.9876,10.1234,-5.5555,15.1515
+  &properties=survey_id,lat,lng,collection_day,denominator
+```
+
+The bbox (bounding box) format is: min lng, min lat, max lng, max lat.
+
+response:
+```jsonc
+[
+  {
+    "survey_id": "Dama_2017_Bamako_2014",
+    "lat": 12.612900,
+    "lng": -8.13560,
+    "collection_day": "2010-01-15",
+    "denominator": 130,
+  },
+  // ...
+]
+```
+
+3. /prevalences
+
+An endpoint for querying model outputs, as stored in `/data/model/<version>/admin<level>.parquet`. Responses are in columnar format.
+
+The optional `model_release` parameter defaults to the latest model release.
+
+The `admin_level` query parameter determines the granularity of the model outputs, while the query parameters `admin0`, `admin1` and `admin2` scope the results to a particular region. Thus for example, to request results within the `admin0` region of Mali (`MLI`), at the finest level of granularity:
+
+request:
+```
+GET /prevalences?
+  &model_release=v2
+  &admin_level=2
+  &admin0=MLI
+  &gene=k13
+  &mutation=469Y
+  &date=2024-05
+  &properties=median,admin2
+```
+
+response:
+```jsonc
+{
+  "median": [
+    0.0907051,
+    0.5127887,
+    0.2504908,
+    0.1886464,
+    // ...
+  ],
+  "admin2": [
+    "MLI.1.1_1",
+    "MLI.2.1_1",
+    "MLI.2.2_1",
+    "MLI.2.3_1",
+    // ...
+  ]
+}
+```
+
+## R prerequisites
+
+R is only needed to create or update the data in `data/` (set-up steps 1 and 2 below). Running the API and its tests needs only Node.
+
+1. Install R 4.5 or later from <https://cloud.r-project.org/>, and check that `Rscript --version` works in a terminal. On Windows, R's `bin` folder may need adding to your `PATH`.
+2. From this `api/` folder, install the packages the scripts use:
+
+   ```sh
+   Rscript scripts/install_dependencies.R
+   ```
+
+   It installs whatever is missing into your personal R library, including STAVE and variantstring at the versions in [the script](scripts/install_dependencies.R) (they aren't on CRAN), checks that everything loads, and ends with `R dependencies ready`. Rerunning it is quick: it skips what's already there.
+
+Run the data scripts from this `api/` folder too. Each calls `here::i_am()`, which makes `api/` the root of the paths it reads and writes, even though the repository's `.git` is one level up. From anywhere else they stop with "Could not find associated project".
+
+## First-time development set-up
+
+Run these from this `api/` folder. Steps 1 and 2 need the [R prerequisites](#r-prerequisites).
+
+1. Process STAVE data. This will create and populate `./data/stave/<data_release_version>/survey_data.parquet`.
+
+```sh
+Rscript ./scripts/process_stave.R <data_release_version>
+```
+
+2. Generate example model outputs
+
+Currently, we generate example model outputs using a script. It needs an internet connection (it reads region lists from Grout), takes a few minutes, and writes about 4.6 GB to `./data/model/v0.1.0/`.
+
+```sh
+Rscript scripts/create_example_model_outputs.R
+```
+
+3. Fetch admin0 region metadata from [Grout](https://github.com/mrc-ide/grout)
+
+```sh
+npx ts-node --esm scripts/fetch_admin0_region_metadata.ts
+```
+
+4. Copy env vars
+
+```sh
+cp .env.example .env
+```
+
+5. Optionally run tests
+
+```sh
+npm run test
+```
+
+6. Start the app
+
+```sh
+npm run dev
+```
+
+## How to update the data
+
+NB The list of in-scope genes and mutations will vary over time, with model releases (rather than with STAVE data releases); thus it is not something to hard-code as a constant. Every model release has a dependency on one STAVE data release.
+
+### STAVE data
+
+When a new STAVE data release is provided, it should be given a version name e.g. "v1.0.0", and committed in `scripts/input/stave/<version>/stave_data.rds`. Then, run the [process_stave.R](./scripts/process_stave.R) script:
+
+```sh
+Rscript ./scripts/process_stave.R v1.0.0
+```
+
+This will create `./data/stave/<version>/survey_data.parquet`.
+
+### Model outputs
+
+As mentioned above, early development has used example model outputs generated by a script. We will at some point have access to real model outputs. Once these are provided, we can get rid of the tooling that creates example model outputs. We may then still need to do some amount of transformation to wrangle the data into the preferred format or filetype; this transformation step should take the form of a new script, akin to `./scripts/process_stave.R`.
+
+As things stand now, a file `./data/model/<version>/metadata.json` must be manually created, to document the dependency of the model outputs (example or real) on a particular STAVE release (and shapefile source since the model outputs, which are per-region, will be in reference to some source of region shapes). Providing the dependency file should eventually be the responsibility of the modelling team.
+
+### Test fixtures
+
+To avoid making tests dependent on potentially changing data, the integration tests use small fixtures (relatively small compared to real data). They shouldn't need frequently updating unless the data schema itself is changing. These are generated by a script, which is configured by [./tests/fixtures/fixture-config.json](./tests/fixtures/fixture-config.json):
+
+```sh
+npm run generate-test-fixtures
+```
+
+### Test fixtures
+
+To avoid making tests dependent on potentially changing data, the integration tests use small fixtures (relatively small compared to real data). They shouldn't need frequently updating unless the data schema itself is changing. These are generated by a script, which is configured by [./tests/fixtures/fixture-config.json](./tests/fixtures/fixture-config.json):
+
+```sh
+npm run generate-test-fixtures
+```
+
+## Data schema details
+
+### Genes and mutations
+
+The [variantstring](https://github.com/mrc-ide/variantstring) format encodes genetic variants in three components: the gene, the locus (position), and the amino acid (sometimes written as "aa"). As far as the app is concerned, however, the variant is composed more simply of two parts: the gene (which exactly corresponds to the variantstring concept of a gene) and the mutation (which fuses the locus and amino acid. Technically we could be more accurate by calling this an 'allele' since 'mutation' implies deviation from a reference allele, and some of the variants are reference alleles). In pre-processing, derived columns for gene and mutation are appended to the STAVE data, to enable this data to be queried by variant.
+
+### Dates
+
+Model outputs ('prevalences') are provided per month. By contrast, [surveys are per day](https://mrc-ide.github.io/STAVE/articles/howto_surveys_table.html#fields-and-requirements).
