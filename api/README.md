@@ -165,8 +165,24 @@ response:
 }
 ```
 
+## R prerequisites
+
+R is only needed to create or update the data in `data/` (set-up steps 1 and 2 below). Running the API and its tests needs only Node.
+
+1. Install R 4.5 or later from <https://cloud.r-project.org/>, and check that `Rscript --version` works in a terminal. On Windows, R's `bin` folder may need adding to your `PATH`.
+2. From this `api/` folder, install the packages the scripts use:
+
+   ```sh
+   Rscript scripts/install_dependencies.R
+   ```
+
+   It installs whatever is missing into your personal R library, including STAVE and variantstring at the versions in [the script](scripts/install_dependencies.R) (they aren't on CRAN), checks that everything loads, and ends with `R dependencies ready`. Rerunning it is quick: it skips what's already there.
+
+Run the data scripts from this `api/` folder too. Each calls `here::i_am()`, which makes `api/` the root of the paths it reads and writes, even though the repository's `.git` is one level up. From anywhere else they stop with "Could not find associated project".
 
 ## First-time development set-up
+
+Run these from this `api/` folder. Steps 1 and 2 need the [R prerequisites](#r-prerequisites).
 
 1. Process STAVE data. This will create and populate `./data/stave/<data_release_version>/survey_data.parquet`.
 
@@ -176,7 +192,7 @@ Rscript ./scripts/process_stave.R <data_release_version>
 
 2. Generate example model outputs
 
-Currently, we generate example model outputs using a script.
+Currently, we generate example model outputs using a script. It needs an internet connection (it reads region lists from Grout), takes a few minutes, and writes about 4.6 GB to `./data/model/v0.1.0/`.
 
 ```sh
 Rscript scripts/create_example_model_outputs.R
