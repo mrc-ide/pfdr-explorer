@@ -192,7 +192,7 @@ Rscript ./scripts/process_stave.R <data_release_version>
 
 2. Generate example model outputs
 
-Currently, we generate example model outputs using a script. It needs an internet connection (it reads region lists from Grout), takes a few minutes, and writes about 4.6 GB to `./data/model/v0.1.0/`.
+Currently, we generate example model outputs using a script. It needs an internet connection (it reads region lists from Grout), takes a few minutes, and writes about 4.6 GB to `./data/model/<version>/` (the script's `model_version`, currently `v0.1.0`).
 
 ```sh
 Rscript scripts/create_example_model_outputs.R
