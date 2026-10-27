@@ -4,3 +4,8 @@ dist/
 data/admin0-region-metadata.json
 data/**/*.parquet
 coverage/
+
+#R
+.Rhistory
+.RData
+.Rproj.user/
