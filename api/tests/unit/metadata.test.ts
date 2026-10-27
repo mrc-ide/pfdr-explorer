@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { getMutationsByGene } from '../../src/utils/metadata.ts';
 import fixtureConfig from '../fixtures/fixture-config.json' with { type: 'json' };
@@ -40,9 +41,8 @@ describe('getMutationsByGene', () => {
 
     expect(runAndReadAll).toHaveBeenCalledOnce();
     const sql = runAndReadAll.mock.calls[0][0] as string;
-    expect(sql).toContain(
-      `FROM 'tests/fixtures/data/model/${fixtureConfig.modelRelease}/admin0.parquet'`,
-    );
+    const expectedPath = join('tests', 'fixtures', 'data', 'model', fixtureConfig.modelRelease, 'admin0.parquet');
+    expect(sql).toContain(`FROM '${expectedPath}'`);
     expect(result).toEqual([
       {
         gene: 'crt',
