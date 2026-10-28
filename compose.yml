@@ -1,0 +1,15 @@
+name: pfdr-explorer
+
+services:
+  api:
+    build: api
+    environment:
+      NODE_ENV: test
+      PORT: "3000"
+
+  app:
+    build: app
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
