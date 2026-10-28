@@ -1,32 +1,20 @@
-# React + TypeScript + Vite
+# PfDR Explorer: the app
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The react frontend. It reads everything from the API in [`../api`](../api).
 
-Currently, two official plugins are available:
+## Run it locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Needs Node 24.22.1 or later (the version in `.nvmrc`); `npm` refuses older versions.
 
-## React Compiler
+In one terminal, start the API with its test data (fromt `api/`; see its README). In another:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+npm ci
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Then open http://localhost:5173. Requests to `/api/...` are forwarded to the API on port 3000.
+
+## Build
+
+`npm run build` type-checks and writes the static site to `dist/`.
