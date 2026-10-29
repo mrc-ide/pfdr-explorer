@@ -97,8 +97,11 @@ const buildBoundsClause = (queryParams: Query) => {
   const coords = bounds.map(value => (value.trim() === "" ? NaN : Number(value)));
   const [minLng, minLat, maxLng, maxLat] = coords;
   const inRange = minLng >= -180 && maxLng <= 180 && minLat >= -90 && maxLat <= 90;
-  if (coords.length !== 4 || !coords.every(isFinite) || !inRange || minLat > maxLat) {
+  if (coords.length !== 4 || !coords.every(isFinite)|| minLat > maxLat) {
     throw new AppError(`Invalid bbox: ${bounds.join(", ")}. Expected format: min_lng,min_lat,max_lng,max_lat`, 400);
+  }
+  if (!inRange) {
+    throw new AppError(`Invalid bbox: ${bounds.join(", ")}. Latitude or longitude range exceeded.`, 400);
   }
   if (minLng > maxLng) {
     throw new AppError("Bounding box should not cross antimeridian. Expected format: min_lng,min_lat,max_lng,max_lat", 400);

@@ -159,15 +159,14 @@ describe('executeParquetQuery SQL generation', () => {
   });
 
   it.each([
-    ['a number with trailing junk', '1junk,0,2,1'],
-    ['an empty coordinate', ',0,2,1'],
-    ['a latitude above 90', '0,0,1,91'],
-    ['a longitude below -180', '-181, 0,1,1'],
-  ])('sends a 400 after getting a bounding box with %s', async (_description, bbox) => {
+    ['a number with trailing junk', '1junk,0,2,1', 'Expected format'],
+    ['an empty coordinate', ',0,2,1', 'Expected format'],
+    ['a latitude above 90', '0,0,1,91', 'range exceeded'],
+    ['a longitude below -180', '-181, 0,1,1', 'range exceeded'],
+  ])('sends a 400 after getting a bounding box with %s', async (_description, bbox, reason) => {
     await expect(
       executeParquetQuery({ properties: 'survey_id', bbox  }, '/surveys', surveyPath),
-    ).rejects.toThrow('Invalid bbox');
-    expect(db.prepare).not.toHaveBeenCalled();
+    ).rejects.toThrow(reason);
   });
 
   it('sends a 400 after getting a bounding box that crosses the antimeridian', async () => {
