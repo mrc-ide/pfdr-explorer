@@ -133,6 +133,15 @@ describe('GET /surveys', () => {
     expect(response.body).toEqual({ error: 'Invalid bbox: 4.245, 25, -12.2389, 10.1595. Expected format: min_lng,min_lat,max_lng,max_lat' });
   });
 
+  it('returns a 400 for a bounding box with a malformed coordinate', async () => {
+    const response = await request(app)
+      .get('/surveys')
+      .query({ ...baseQuery, bbox: '1junk,0,2,1', properties: pointProperties});
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid bbox: 1junk, 0, 2, 1. Expected format: min_lng,min_lat,max_lng,max_lat' });
+  });
+
   it('uses the data release of the latest model release when none is specified', async () => {
     const query = { gene: baseQuery.gene, mutation: baseQuery.mutation, properties: pointProperties };
 

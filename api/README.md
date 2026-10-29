@@ -125,6 +125,8 @@ response:
 ]
 ```
 
+Coordinates must be plain numbers in degrees (longitude -180 to 180, latitude -90 to 90).
+
 3. /prevalences
 
 An endpoint for querying model outputs, as stored in `/data/model/<version>/admin<level>.parquet`. Responses are in columnar format.
