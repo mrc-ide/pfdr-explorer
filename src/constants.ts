@@ -2,7 +2,8 @@ import { readdir } from "fs/promises";
 import { join } from "node:path";
 import config from "./config.ts";
 
-export const adminLevels = ["0", "1", "2"];
+export const adminLevels = ["0", "1", "2"] as const;
+export type AdminLevel = typeof adminLevels[number];
 
 export const SURVEY_COLUMNS = {
   COLLECTION_DAY: "collection_day",
@@ -44,6 +45,7 @@ export const PREVALENCE_COLUMNS = {
   NO_OF_INFORMING_SURVEYS: "no_of_informing_surveys", // Gives a survey id
   SD: "SD",
   UPPER_95: "upper_95",
+  VARIANT: "variant",
 } as const;
 
 const staveFiles = await readdir(join(config.dataDir, "stave"), { withFileTypes: true });

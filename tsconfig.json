@@ -7,7 +7,7 @@
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
-    "strict": true,
+    "strict": true, // required for zod
     "skipLibCheck": true
   },
   "include": ["src/**/*", "tests/**/*", "scripts/**/*"],

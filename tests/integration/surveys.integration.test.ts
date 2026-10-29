@@ -130,7 +130,7 @@ describe('GET /surveys', () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: 'Invalid bbox: 4.245, 25, -12.2389, 10.1595. Expected format: min_lng,min_lat,max_lng,max_lat' });
+    expect(response.body.error).toContain('Invalid bbox: 4.245, 25, -12.2389, 10.1595. Expected format: min_lng,min_lat,max_lng,max_lat');
   });
 
   it('uses the data release of the latest model release when none is specified', async () => {
@@ -155,9 +155,196 @@ describe('GET /surveys', () => {
         properties: 'survey_id',
       });
 
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({
-      error: 'Unknown data release requested: ../private',
+    expect(response.status).toBe(400);
+    expect(response.body.error).toMatch(/Invalid (input|option): expected/);
+  });
+
+  // Errors are reported as `{ error: z.prettifyError(zodError) }`, which prefixes each
+  // message with '✖' and follows it with the path, hence `toContain`/`toMatch` rather than `toBe`.
+  const validQuery = { ...baseQuery, properties: 'survey_id' };
+
+  describe('required query parameters', () => {
+    it('reports every missing parameter', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...baseQuery, mutation: undefined });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Invalid input\n  → at properties');
+      expect(response.body.error).toContain('Invalid input: expected string, received undefined\n  → at mutation');
     });
+
+    it('rejects an empty required parameter', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, mutation: '' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Too small: expected string to have >=1 characters\n  → at mutation');
+    });
+
+    it('accepts a request containing every required parameter', async () => {
+      const response = await request(app).get('/surveys').query(validQuery);
+
+      expect(response.status).toBe(200);
+    });
+  });
+
+  describe('single-value query parameters', () => {
+    it.each(['gene', 'mutation', 'survey_id'])('rejects a comma-separated value for %s', async (param) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [param]: 'a,b' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain(`Query parameter "${param}" must be a single string`);
+    });
+
+    const receivedArray = /Invalid input: expected string, received array/;
+    const invalidOption = /Invalid (input|option): expected/;
+
+    it.each([
+      { param: 'gene', value: 'crt', zodError: receivedArray },
+      { param: 'mutation', value: '76K', zodError: receivedArray },
+      { param: 'survey_id', value: 's1', zodError: receivedArray },
+      { param: 'data_release', value: fixtureConfig.dataRelease, zodError: invalidOption },
+      { param: 'date_from', value: '2024-01-01', zodError: receivedArray },
+      { param: 'date_to', value: '2024-01-01', zodError: receivedArray },
+    ])('rejects repeated values for $param', async ({ param, value, zodError }) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [param]: [value, value] });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toMatch(zodError);
+    });
+  });
+
+  describe('date parameters', () => {
+    it.each(['date_from', 'date_to'])('rejects an invalid %s format', async (parameter) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [parameter]: '2025-01' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Invalid ISO date');
+    });
+
+    it.each(['date_from', 'date_to'])('rejects an invalid date for %s', async (parameter) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [parameter]: '2026-99-99' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Invalid ISO date');
+    });
+
+    it.each(['date_from', 'date_to'])('does not requires %s with the other date range parameter', async (parameter) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [parameter]: '2024-01-01' });
+
+      expect(response.status).toBe(200);
+    });
+
+    it('rejects when date_from is later than date_to', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({
+          ...validQuery,
+          date_from: '2025-01-01',
+          date_to: '2024-01-01',
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain(`'date_from' cannot be later than 'date_to'.`);
+    });
+  });
+
+  describe('bounding box', () => {
+    const expectedFormat = 'Expected format: min_lng,min_lat,max_lng,max_lat';
+
+    it('accepts a valid bounding box given as a comma-separated list', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({
+          ...validQuery,
+          bbox: '-12.2389,10.1595,4.245,25', // Mali
+          date_from: '2000-01-01',
+          date_to: '2030-02-01',
+        });
+
+      expect(response.status).toBe(200);
+      const surveyIds = response.body.map((survey: { survey_id: string }) => survey.survey_id);
+      expect(surveyIds).toHaveLength(2);
+      expect(surveyIds).toEqual(expect.arrayContaining([
+        'WWARN_16154388_mali_1998',
+        's0136_Bunkpurugu_period1',
+      ]));
+    });
+
+    it.each([
+      ['a partial bounding box', '1,2'],
+      ['a non-numeric coordinate', 'a,2,3,4'],
+      ['an empty coordinate', ',2,3,4'],
+    ])('rejects %s', async (_description, bbox) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, bbox });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain(`Invalid bbox: ${bbox.split(',').join(', ')}. ${expectedFormat}`);
+    });
+
+    it('rejects a coordinate with trailing characters', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, bbox: '1abc,2,3,4' });
+
+      expect(response.status).toBe(400);
+    });
+
+    it.each(['0,-91,1,1', '0,0,1,91', '-181,0,1,1', '0,0,181,1'])('rejects an out-of-range bounding box: %s', async (bbox) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, bbox });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain('Latitudes must be within ±90 and longitudes within ±180.');
+    });
+
+    it('rejects a bounding box that crosses the antimeridian', async () => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, bbox: '170,10,-170,20' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toContain(`Bounding box should not cross antimeridian. ${expectedFormat}`);
+    });
+  });
+
+  describe('empty optional query parameters', () => {
+    it.each([
+      'data_release',
+      'survey_id',
+      'date_from',
+      'date_to',
+      'bbox',
+    ])('rejects an empty %s', async (param) => {
+      const response = await request(app)
+        .get('/surveys')
+        .query({ ...validQuery, [param]: '' });
+
+      expect(response.status).toBe(400);
+    });
+  });
+
+  it.each(['date', 'admin_level', 'unknown'])('rejects an unrecognized parameter: %s', async (param) => {
+    const response = await request(app)
+      .get('/surveys')
+      .query({ ...validQuery, [param]: 'x' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error).toContain(`Unrecognized key: "${param}"`);
   });
 });
