@@ -18,3 +18,16 @@ Then open http://localhost:5173. Requests to `/api/...` are forwarded to the API
 ## Build
 
 `npm run build` type-checks and writes the static site to `dist/`.
+
+## Test it
+
+The same checks CI runs:
+
+```
+npm run typecheck
+npm run lint
+npm test
+npm run test:coverage
+```
+
+`npm run test:watch` re-runs the tests each time you save a file.
