@@ -22,12 +22,10 @@ export default defineConfig({
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/main.tsx', 'src/setupTests.ts', 'src/**/*.test.{ts,tsx}'],
       thresholds: {
-        global: {
           statements: 100,
           branches: 95,
           functions: 100,
           lines: 100,
-        },
       }
     },
   },

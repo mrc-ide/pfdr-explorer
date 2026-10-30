@@ -59,6 +59,7 @@ jobs:
           name: api-coverage-report
           path: api/coverage/
           retention-days: 14
+
   app-typecheck:
     name: App type check
     runs-on: ubuntu-latest
@@ -73,7 +74,7 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
-      - run: npx tsc --noEmit
+      - run: npm run typecheck
 
   app-lint:
     name: App lint
@@ -112,7 +113,7 @@ jobs:
           name: app-coverage-report
           path: app/coverage/
           retention-days: 14
-          
+
   app-build:
     name: App build
     runs-on: ubuntu-latest
