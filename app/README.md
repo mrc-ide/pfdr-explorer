@@ -1,12 +1,12 @@
 # PfDR Explorer: the app
 
-The react frontend. It reads everything from the API in [`../api`](../api).
+The React frontend. It loads data from the API in [`../api`](../api).
 
 ## Run it locally
 
 Needs Node 24.22.1 or later (the version in `.nvmrc`); `npm` refuses older versions.
 
-In one terminal, start the API with its test data (fromt `api/`; see its README). In another:
+In one terminal, start the API with its test data (from `api/`; see its README). In another:
 
 ```
 npm ci
