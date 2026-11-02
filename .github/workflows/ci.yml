@@ -6,6 +6,12 @@ on:
   pull_request:
 
 jobs:
+  node-version:
+    name: Node version match
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: git diff --no-index api/.nvmrc app/.nvmrc
   api-typecheck:
     name: API type check
     runs-on: ubuntu-latest
