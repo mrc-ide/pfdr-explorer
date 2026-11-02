@@ -15,7 +15,7 @@ Each folder is its own npm project: run `npm ci` and the other commands inside i
 
 ## Run it with Docker
 
-To run the app and the API together, with the API's test data, from the repository root:
+To run the app and the API together from the repository root. The API serves its test data, the small set committed in `api/tests/fixtures/data`, so there's nothing to generate first. (For the full example data, see [First-time development set-up](api/README.md#first-time-development-set-up) in the API's README.)
 
 ```
 docker compose up --build
