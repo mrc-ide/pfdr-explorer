@@ -7,7 +7,11 @@ A web app mapping antimalarial drug-resistance markers in Africa, from survey da
 | [`api/`](api/) | The read-only API serving survey points and model outputs. See [api/README.md](api/README.md) |
 | [`app/`](app/) | The React frontend. See [app/README.md](app/README.md) |
 
-Each folder is its own npm project: run `npm ci` and the other commands inside it. Node version: see `.nvmrc`.
+Each folder is its own npm project: run `npm ci` and the other commands inside it.
+
+## Prerequisites
+- **Node 24.22.1 or later**, the version in `api/.nvmrc` and `app/.nvmrc` (CI checks they match). `npm` refuses older versions
+- **Docker**, with Compose (`docker compose`), only to run both together as below
 
 ## Run it with Docker
 
