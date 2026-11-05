@@ -1,18 +1,31 @@
 import { describe, expect, it } from 'vitest';
 import { contrastRatio, readableInk, relativeLuminance } from './contrast.ts';
 
+const BLACK = '#000000';
+const WHITE = '#FFFFFF';
+const WHITE_AS_RGB = 'rgb(255, 255, 255)';
+const INK = '#22262B';
+const PAPER = '#F3F1EC';
+const TEAL = '#0F5C5C';
+const PALEST_PREVALENCE = '#FCF7E1';
+const DARKEST_PREVALENCE = '#3B1556';
+
+const HIGHEST_CONTRAST = 21;
+const NO_CONTRAST = 1;
+const DECIMAL_PLACES = 5;
+
 describe('contrastRatio', () => {
   it('gives 21 for black on white and 1 for a colour on itself', () => {
-    expect(contrastRatio('#000000', '#FFFFFF')).toBeCloseTo(21, 5);
-    expect(contrastRatio('#0F5C5C', '#0F5C5C')).toBe(1);
+    expect(contrastRatio(BLACK, WHITE)).toBeCloseTo(HIGHEST_CONTRAST, DECIMAL_PLACES);
+    expect(contrastRatio(TEAL, TEAL)).toBe(NO_CONTRAST);
   });
 
   it('gives the same answer whichever colour comes first', () => {
-    expect(contrastRatio('#22262B', '#F3F1EC')).toBe(contrastRatio('#F3F1EC', '#22262B'));
+    expect(contrastRatio(INK, PAPER)).toBe(contrastRatio(PAPER, INK));
   });
 
   it('accepts the rgb() strings colour scales produce', () => {
-    expect(contrastRatio('rgb(255, 255, 255)', '#000000')).toBeCloseTo(21, 5);
+    expect(contrastRatio(WHITE_AS_RGB, BLACK)).toBeCloseTo(HIGHEST_CONTRAST, DECIMAL_PLACES);
   });
 
   it('refuses something that is not a colour', () => {
@@ -22,7 +35,7 @@ describe('contrastRatio', () => {
 
 describe('readableInk', () => {
   it('picks dark ink on a pale fill and light ink on a dark fill', () => {
-    expect(readableInk('#FCF7E1', '#22262B', '#FFFFFF')).toBe('#22262B');
-    expect(readableInk('#3B1556', '#22262B', '#FFFFFF')).toBe('#FFFFFF');
+    expect(readableInk(PALEST_PREVALENCE, INK, WHITE)).toBe(INK);
+    expect(readableInk(DARKEST_PREVALENCE, INK, WHITE)).toBe(WHITE);
   });
 });

@@ -36,18 +36,18 @@ h3 {
 a {
   color: var(--link);
   text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
+  text-decoration-thickness: var(--underline-width);
+  text-underline-offset: var(--underline-offset);
 }
 
 a:hover {
   color: var(--link-hover);
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: var(--underline-width-hover);
 }
 
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: var(--focus-width) solid var(--focus-ring);
-  box-shadow: 0 0 0 2px var(--focus-ring-inner);
+  box-shadow: 0 0 0 var(--focus-offset) var(--focus-ring-inner);
   outline-offset: var(--focus-offset);
 }
 
