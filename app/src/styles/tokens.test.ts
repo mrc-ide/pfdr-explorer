@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import { describe, expect, it } from 'vitest';
 import { contrastRatio } from '../lib/core/contrast.ts';
 import tokensCss from './tokens.css?raw';
