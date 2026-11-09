@@ -17,12 +17,12 @@ const BRIGHTNESS_WEIGHT = {
 
 const SCREEN_FLARE = 0.05;
 
-const linear = (channel: number) => {
+const toLinearLight = (channel: number): number => {
     const value = channel / CHANNEL_MAX;
     if (value <= SRGB_CURVE.straightUpTo) {
         return value / SRGB_CURVE.straightSlope;
     }
-    return ((value + SRGB_CURVE.offset) / 1.055) ** SRGB_CURVE.exponent;
+    return ((value + SRGB_CURVE.offset) / (1 + SRGB_CURVE.offset)) ** SRGB_CURVE.exponent;
 };
 
 export const relativeLuminance = (colour: string): number => {
@@ -31,9 +31,9 @@ export const relativeLuminance = (colour: string): number => {
         throw new Error(`"${colour}" is not a colour.`);
     }
     return (
-        BRIGHTNESS_WEIGHT.red * linear(r) +
-        BRIGHTNESS_WEIGHT.green * linear(g) +
-        BRIGHTNESS_WEIGHT.blue * linear(b)
+        BRIGHTNESS_WEIGHT.red * toLinearLight(r) +
+        BRIGHTNESS_WEIGHT.green * toLinearLight(g) +
+        BRIGHTNESS_WEIGHT.blue * toLinearLight(b)
     );
 };
 
