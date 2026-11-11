@@ -16,6 +16,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     restoreMocks: true,
+    fsModuleCache: false,
+    css: { include: [/tokens\.css/, /src\/lib\/.+\.css/] },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
