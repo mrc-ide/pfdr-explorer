@@ -1,0 +1,79 @@
+.field {
+  --_charm-select-min-width: 15em;
+  --_charm-select-text-inset: 0.75em;
+  --_charm-select-arrow-width: 0.75em;
+  --_charm-select-arrow-height: 0.5em;
+  --_charm-select-arrow-inset: 0.875em;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--_charm-label-gap);
+  font-family: var(--charm-font);
+}
+
+.small {
+  font-size: var(--_charm-size-small);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}
+
+.label {
+  color: var(--charm-text-secondary);
+  font-size: max(var(--_charm-text-min), var(--_charm-text-smaller));
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+}
+
+.control {
+  position: relative;
+  display: flex;
+}
+
+.control::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  right: var(--_charm-select-arrow-inset);
+  width: var(--_charm-select-arrow-width);
+  height: var(--_charm-select-arrow-height);
+  margin-block: auto;
+  background: var(--charm-text-primary);
+  mask: url('./chevron.svg') no-repeat center / contain;
+  pointer-events: none;
+}
+
+.select {
+  box-sizing: border-box;
+  flex: 1;
+  appearance: none;
+  min-width: min(var(--_charm-select-min-width), 100%);
+  min-height: var(--_charm-control-height);
+  padding-block: 0;
+  padding-left: var(--_charm-select-text-inset);
+  padding-right: calc(var(--_charm-select-arrow-inset) + var(--_charm-select-arrow-width) + var(--_charm-select-arrow-inset));
+  border: var(--_charm-line) solid var(--charm-border-control);
+  border-radius: var(--_charm-radius);
+  background: var(--charm-surface-card);
+  color: var(--charm-text-primary);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--_charm-weight-regular);
+  line-height: var(--_charm-leading-body);
+  cursor: pointer;
+}
+
+.select:focus-visible {
+  outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
+  outline-offset: var(--_charm-focus-offset);
+  box-shadow: 0 0 0 var(--_charm-focus-offset) var(--charm-focus-ring-inner);
+}
+
+.select:hover {
+  background: var(--charm-bg-page);
+}

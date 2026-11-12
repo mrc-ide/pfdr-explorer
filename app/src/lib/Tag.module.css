@@ -1,0 +1,55 @@
+.tag {
+  --_charm-tag-gap: 0.5em;
+  --_charm-tag-height: 2em;
+  --_charm-tag-padding-inline: 0.75em;
+  --_charm-tag-dot-size: 0.5em;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_charm-tag-gap);
+  min-height: var(--_charm-tag-height);
+  padding: 0 var(--_charm-tag-padding-inline);
+  border: var(--_charm-line) solid transparent;
+  border-radius: var(--_charm-radius-pill);
+  font-family: var(--charm-font);
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+  white-space: nowrap;
+}
+
+.medium {
+  font-size: var(--_charm-size-small);
+}
+
+.large {
+  font-size: var(--_charm-size-medium);
+}
+
+.neutral {
+  background: var(--charm-surface-sunken);
+  color: var(--charm-text-secondary);
+}
+
+.accent {
+  background: var(--charm-accent-bg-selected);
+  color: var(--charm-text-accent);
+}
+
+.warning {
+  background: var(--charm-warning-bg);
+  color: var(--charm-text-warning);
+}
+
+.illustrative {
+  border: var(--_charm-line) dashed var(--charm-border-control);
+  background: transparent;
+  color: var(--charm-text-secondary);
+}
+
+.dot {
+  width: var(--_charm-tag-dot-size);
+  height: var(--_charm-tag-dot-size);
+  border-radius: var(--_charm-radius-circle);
+  background: currentColor;
+}

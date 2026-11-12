@@ -1,0 +1,88 @@
+.button {
+  --_charm-button-gap: 0.5em;
+  --_charm-button-padding-inline: 1em;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_charm-button-gap);
+  min-height: var(--_charm-control-height);
+  padding: 0 var(--_charm-button-padding-inline);
+  border: var(--_charm-line) solid transparent;
+  border-radius: var(--_charm-radius);
+  font-family: var(--charm-font);
+  font-weight: var(--_charm-weight-semibold);
+  line-height: var(--_charm-leading-tight);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--_charm-dur-fast) var(--_charm-ease-standard),
+    border-color var(--_charm-dur-fast) var(--_charm-ease-standard);
+}
+
+.small {
+  font-size: var(--_charm-size-small);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}
+
+.button:focus-visible {
+  outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
+  outline-offset: var(--_charm-focus-offset);
+  box-shadow: 0 0 0 var(--_charm-focus-offset) var(--charm-focus-ring-inner);
+}
+
+.primary {
+  background: var(--charm-accent);
+  border-color: var(--charm-accent);
+  color: var(--charm-text-on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--charm-accent-hover);
+  border-color: var(--charm-accent-hover);
+}
+
+.primary:active:not(:disabled) {
+  background: var(--charm-accent-pressed);
+  border-color: var(--charm-accent-pressed);
+}
+
+.secondary {
+  background: var(--charm-surface-card);
+  border-color: var(--charm-border-control);
+  color: var(--charm-text-primary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--charm-surface-sunken);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--charm-link);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--charm-accent-bg-subtle);
+}
+
+.button:disabled {
+  background: var(--charm-surface-sunken);
+  border-color: var(--charm-border-subtle);
+  color: var(--charm-text-disabled);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

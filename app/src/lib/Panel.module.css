@@ -1,0 +1,76 @@
+.panel {
+  --_charm-panel-radius: 0.375em;
+  --_charm-panel-padding: clamp(1em, 0.6em + 1.2vw, 1.5em);
+  --_charm-panel-head-padding-block: 1em;
+  --_charm-panel-head-gap: 1em;
+  --_charm-panel-actions-gap: 0.5em;
+  --_charm-panel-eyebrow-size: 1.125em;
+  --_charm-panel-eyebrow-leading: 1.2;
+  --_charm-panel-eyebrow-spacing: 0.06em;
+  --_charm-panel-title-size: 1.25em;
+  --_charm-panel-title-leading: 1.3;
+
+  box-sizing: border-box;
+  border: var(--_charm-line) solid var(--charm-border-panel);
+  border-radius: var(--_charm-panel-radius);
+  background: var(--charm-surface-card);
+  color: var(--charm-text-primary);
+  font-family: var(--charm-font);
+}
+
+.small {
+  font-size: var(--_charm-size-small);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}
+
+.head {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--_charm-panel-head-gap);
+  padding: var(--_charm-panel-head-padding-block) var(--_charm-panel-padding);
+  border-bottom: var(--_charm-line) solid var(--charm-border-subtle);
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--_charm-label-gap);
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--charm-text-secondary);
+  font-size: var(--_charm-panel-eyebrow-size);
+  font-weight: var(--_charm-weight-semibold);
+  line-height: var(--_charm-panel-eyebrow-leading);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--_charm-panel-eyebrow-spacing);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--_charm-panel-title-size);
+  font-weight: var(--_charm-weight-semibold);
+  line-height: var(--_charm-panel-title-leading);
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  gap: var(--_charm-panel-actions-gap);
+}
+
+.body {
+  box-sizing: border-box;
+  padding: var(--_charm-panel-padding);
+}
