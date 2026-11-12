@@ -1,0 +1,90 @@
+.switch {
+  --_charm-switch-gap: 0.625em;
+  --_charm-switch-padding-block: 0.25em;
+  --_charm-switch-track-width: 2.5em;
+  --_charm-switch-track-height: 1.5em;
+  --_charm-switch-knob-size: 1.125em;
+  --_charm-switch-knob-inset: 0.125em;
+  --_charm-switch-state-width: 1.75em;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_charm-switch-gap);
+  padding: var(--_charm-switch-padding-block) 0;
+  border: 0;
+  background: none;
+  color: var(--charm-text-primary);
+  font-family: var(--charm-font);
+  font-weight: var(--_charm-weight-regular);
+  line-height: var(--_charm-leading-body);
+  cursor: pointer;
+}
+
+.small {
+  font-size: var(--_charm-size-small);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}
+
+.switch:focus-visible {
+  outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
+  outline-offset: var(--_charm-focus-offset);
+  box-shadow: 0 0 0 var(--_charm-focus-offset) var(--charm-focus-ring-inner);
+}
+
+.track {
+  box-sizing: border-box;
+  position: relative;
+  flex: none;
+  width: var(--_charm-switch-track-width);
+  height: var(--_charm-switch-track-height);
+  border: var(--_charm-line) solid var(--charm-border-control);
+  border-radius: var(--_charm-radius-pill);
+  background: var(--charm-border-strong);
+  transition: background var(--_charm-dur-fast) var(--_charm-ease-standard);
+}
+
+.knob {
+  box-sizing: border-box;
+  position: absolute;
+  top: var(--_charm-switch-knob-inset);
+  left: var(--_charm-switch-knob-inset);
+  width: var(--_charm-switch-knob-size);
+  height: var(--_charm-switch-knob-size);
+  border: var(--_charm-line) solid var(--charm-border-control);
+  border-radius: var(--_charm-radius-circle);
+  background: var(--charm-surface-card);
+  transition: left var(--_charm-dur-fast) var(--_charm-ease-standard);
+}
+
+.switch[aria-checked='true'] .track {
+  border-color: var(--charm-accent);
+  background: var(--charm-accent);
+}
+
+.switch[aria-checked='true'] .knob {
+  left: calc(100% - var(--_charm-switch-knob-size) - var(--_charm-switch-knob-inset));
+  border-color: var(--charm-accent);
+}
+
+.state {
+  min-width: var(--_charm-switch-state-width);
+  color: var(--charm-text-secondary);
+  font-size: max(var(--_charm-text-min), var(--_charm-text-smaller));
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .knob {
+    transition: none;
+  }
+}

@@ -1,0 +1,77 @@
+.field {
+  --_charm-segment-gap: 2px;
+  --_charm-segment-inset: 3px;
+  --_charm-segment-height: 2.5em;
+  --_charm-segment-padding-inline: 0.875em;
+  --_charm-segment-radius: 0.2em;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--_charm-label-gap);
+  font-family: var(--charm-font);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}
+
+.label {
+  color: var(--charm-text-secondary);
+  font-size: var(--_charm-text-smaller);
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+}
+
+.group {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-self: flex-start;
+  gap: var(--_charm-segment-gap);
+  padding: var(--_charm-segment-inset);
+  border: var(--_charm-line) solid var(--charm-border-control);
+  border-radius: var(--_charm-radius);
+  background: var(--charm-surface-card);
+}
+
+.option {
+  box-sizing: border-box;
+  min-height: var(--_charm-segment-height);
+  padding: 0 var(--_charm-segment-padding-inline);
+  border: var(--_charm-line) solid transparent;
+  border-radius: var(--_charm-segment-radius);
+  background: transparent;
+  color: var(--charm-text-primary);
+  font-family: inherit;
+  font-size: var(--_charm-text-smaller);
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.option:focus-visible {
+  outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
+  outline-offset: var(--_charm-focus-offset);
+  box-shadow: 0 0 0 var(--_charm-focus-offset) var(--charm-focus-ring-inner);
+}
+
+.option:hover {
+  background: var(--charm-surface-sunken);
+}
+
+.option[aria-checked='true'] {
+  background: var(--charm-accent);
+  box-shadow: inset 0 0 0 var(--_charm-line) var(--charm-accent-hover);
+  color: var(--charm-text-on-accent);
+  font-weight: var(--_charm-weight-semibold);
+}
+
+.option[aria-checked='true']:focus-visible {
+  box-shadow:
+    inset 0 0 0 var(--_charm-line) var(--charm-accent-hover),
+    0 0 0 var(--_charm-focus-offset) var(--charm-focus-ring-inner);
+}
