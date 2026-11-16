@@ -15,6 +15,8 @@ npm run dev
 
 Then open http://localhost:5173. Requests to `/api/...` are forwarded to the API on port 3000.
 
+To try the components in `src/lib` by hand, open https://localhost:5173/showcase.html. It shows each one in its variants, sizes and states, and it;s served in development only. `npm run build` leaves it out.
+
 ## Build
 
 `npm run build` type-checks and writes the static site to `dist/`.
