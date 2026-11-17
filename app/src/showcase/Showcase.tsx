@@ -36,7 +36,7 @@ const EXAMPLE_OPTIONS = [
 
 const THREE_SIZES = ['small', 'medium', 'large'] as const;
 const TWO_SIZES = ['medium', 'large'] as const;
-const TONES = ['neutral', 'accent', 'warning', 'illustrative'] as const;
+const TONES = ['neutral', 'accent', 'warning'] as const;
 const NESTED_HEADING: HeadingLevel = 3;
 
 export const Showcase = () => {
@@ -134,7 +134,6 @@ export const Showcase = () => {
             {TONES.map(tone => (
               <Tag key={tone} tone={tone} size={size}>{tone}, {size}</Tag>
             ))}
-            <Tag size={size} dot>With a dot</Tag>
           </div>
         ))}
       </section>
