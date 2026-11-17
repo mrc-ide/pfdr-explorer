@@ -2,8 +2,8 @@ import { useId, useRef, type KeyboardEvent } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './SegmentedControl.module.css';
-import sizes from './sizes.module.css'
-import type { Size } from './sizes';
+import sizes from './sizes.module.css';
+import type { Size } from './sizes.ts';
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -15,7 +15,7 @@ export interface SegmentedControlProps<T extends string> {
   options: readonly SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  size?: Size;
+  size?: Exclude<Size, 'small'>;
 }
 
 const TAB_STOP = 0;

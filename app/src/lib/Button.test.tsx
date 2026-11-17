@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Button } from './Button';
+import { Button } from './Button.tsx';
 
 describe('Button', () => {
   it('is a plain button by default, so it never submits a form by accident', () => {
@@ -13,7 +13,7 @@ describe('Button', () => {
     const onClick = vi.fn();
     const { rerender } = render(<Button onClick={onClick}>Download</Button>);
     await userEvent.click(screen.getByRole('button'));
-    expect(onClick).toHaveBeenCalled();
+    expect(onClick).toHaveBeenCalledOnce();
     rerender(<Button onClick={onClick} disabled>Download</Button>);
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledOnce();

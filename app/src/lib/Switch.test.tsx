@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { Switch } from './Switch';
+import { Switch } from './Switch.tsx';
 
 describe('Switch', () => {
   const ControlledSwitch = () => {

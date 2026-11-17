@@ -21,10 +21,10 @@ To try the components in `src/lib` by hand, open http://localhost:5173/showcase.
 
 `src/lib` is the code written to be reused by other apps, not only this one. It has three layers:
 - `core/` (plain functions)
-- `charm/` (**CHARM**, Charts, Hotspots And Region Maps which is the map and the trend chart, drawn with D3 so that any framework can use them, arriving with the map PRs)
-- The react components on top, such as the buttons and selects.
+- `charm/` (**CHARM**, Charts, Hotspots And Region Maps: the map and the trend chart, drawn with D3 so that any framework can use them, arriving with the map PRs)
+- The React components on top, such as the buttons and selects
 
-So `charm/` already holds what every component reads, the theme's defaults in `defaults.css` and the internal constants (sizes, weights, spacing, timings) in `constants.css`. Nothing in `src/lib` imports app code. More in [`src/lib/README.md`](src/lib/README.md).
+`charm/` already holds what every component reads, the theme's defaults in `defaults.css` and the internal constants (sizes, weights, spacing, timings) in `constants.css`. Nothing in `src/lib` imports app code. More in [`src/lib/README.md`](src/lib/README.md).
 
 ## Build
 

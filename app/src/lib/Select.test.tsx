@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { Select } from './Select.tsx';
 
 describe('Select', () => {
-    const groups = [
+  const groups = [
     { label: 'Group 1', options: [{ value: 'a', label: 'Option A' }, { value: 'b', label: 'Option B' }] },
     { label: 'Group 2', options: [{ value: 'c', label: 'Option C', disabled: true, note: 'Not available' }] },
   ];

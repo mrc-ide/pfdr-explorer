@@ -2,8 +2,8 @@ import { useId, type ReactNode } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './Panel.module.css';
-import sizes from './sizes.module.css'
-import type { Size } from './sizes';
+import sizes from './sizes.module.css';
+import type { Size } from './sizes.ts';
 
 export type HeadingLevel = 2 | 3 | 4;
 

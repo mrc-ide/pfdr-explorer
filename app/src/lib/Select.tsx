@@ -2,8 +2,8 @@ import { useId, type SelectHTMLAttributes } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './Select.module.css';
-import sizes from './sizes.module.css'
-import type { Size } from './sizes';
+import sizes from './sizes.module.css';
+import type { Size } from './sizes.ts';
 
 export interface SelectOption {
   value: string;
