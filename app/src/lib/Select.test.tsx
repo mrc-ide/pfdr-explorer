@@ -4,27 +4,27 @@ import { describe, expect, it, vi } from 'vitest';
 import { Select } from './Select.tsx';
 
 describe('Select', () => {
-  const groups = [
-    { label: 'k13', options: [{ value: 'k13:combined', label: 'k13 combined' }, { value: 'k13:561H', label: 'k13 561H' }] },
-    { label: 'crt', options: [{ value: 'crt:76T', label: 'crt 76T', disabled: true, note: 'Not enough data for a meaningful model' }] },
+    const groups = [
+    { label: 'Group 1', options: [{ value: 'a', label: 'Option A' }, { value: 'b', label: 'Option B' }] },
+    { label: 'Group 2', options: [{ value: 'c', label: 'Option C', disabled: true, note: 'Not available' }] },
   ];
 
   it('is a combobox named by its visible label', () => {
-    render(<Select label="Marker" value="k13:561H" onChange={() => {}} options={groups} />);
-    expect(screen.getByRole('combobox', { name: 'Marker' })).toHaveValue('k13:561H');
+    render(<Select label="Choice" value="b" onChange={() => {}} options={groups} />);
+    expect(screen.getByRole('combobox', { name: 'Choice' })).toHaveValue('b');
   });
 
   it('groups options and explains why one is unavailable', () => {
-    render(<Select label="Marker" value="k13:combined" onChange={() => {}} options={groups} />);
-    expect(screen.getByRole('group', { name: 'crt' })).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'crt 76T (Not enough data for a meaningful model)' })).toBeDisabled();
+    render(<Select label="Choice" value="a" onChange={() => {}} options={groups} />);
+    expect(screen.getByRole('group', { name: 'Group 2' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'Option C (Not available)' })).toBeDisabled();
   });
 
   it('reports the chosen value', async () => {
     const onChange = vi.fn();
-    render(<Select label="Marker" value="k13:combined" onChange={onChange} options={groups} />);
-    await userEvent.selectOptions(screen.getByRole('combobox'), 'k13:561H');
-    expect(onChange).toHaveBeenCalledWith('k13:561H');
+    render(<Select label="Choice" value="a" onChange={onChange} options={groups} />);
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'b');
+    expect(onChange).toHaveBeenCalledWith('b');
   });
 
   it('takes plain options as well as groups, and keeps an id passed in', () => {

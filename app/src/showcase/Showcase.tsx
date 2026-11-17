@@ -51,7 +51,7 @@ export const Showcase = () => {
   return (
     <main className={styles.page}>
       <section className={styles.stack}>
-        <h1>CHARM components</h1>
+        <h1>Component library</h1>
         <p className={styles.note}>
           Every component in its variants, sizes and states, for trying by hand. Only <code>npm run dev</code> serves
           this page: it isn't part of the built app.
