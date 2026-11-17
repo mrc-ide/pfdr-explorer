@@ -13,6 +13,7 @@ describe('Button', () => {
     const onClick = vi.fn();
     const { rerender } = render(<Button onClick={onClick}>Download</Button>);
     await userEvent.click(screen.getByRole('button'));
+    expect(onClick).toHaveBeenCalled();
     rerender(<Button onClick={onClick} disabled>Download</Button>);
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledOnce();
