@@ -21,18 +21,6 @@
     border-color var(--_charm-dur-fast) var(--_charm-ease-standard);
 }
 
-.small {
-  font-size: var(--_charm-size-small);
-}
-
-.medium {
-  font-size: var(--_charm-size-medium);
-}
-
-.large {
-  font-size: var(--_charm-size-large);
-}
-
 .button:focus-visible {
   outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
   outline-offset: var(--_charm-focus-offset);

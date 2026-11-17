@@ -2,11 +2,12 @@ import type { ReactNode } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './Tag.module.css';
+import type { Size } from './sizes';
 
 export interface TagProps {
   tone?: 'neutral' | 'accent' | 'warning' | 'illustrative';
   dot?: boolean;
-  size?: 'medium' | 'large';
+  size?: Exclude<Size, 'small'>;
   children: ReactNode;
 }
 

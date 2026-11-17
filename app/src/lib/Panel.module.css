@@ -18,18 +18,6 @@
   font-family: var(--charm-font);
 }
 
-.small {
-  font-size: var(--_charm-size-small);
-}
-
-.medium {
-  font-size: var(--_charm-size-medium);
-}
-
-.large {
-  font-size: var(--_charm-size-large);
-}
-
 .head {
   box-sizing: border-box;
   display: flex;

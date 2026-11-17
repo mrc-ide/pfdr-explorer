@@ -1,0 +1,11 @@
+.small {
+  font-size: var(--_charm-size-small);
+}
+
+.medium {
+  font-size: var(--_charm-size-medium);
+}
+
+.large {
+  font-size: var(--_charm-size-large);
+}

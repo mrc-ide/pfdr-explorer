@@ -2,6 +2,8 @@ import { useId, type ReactNode } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './Panel.module.css';
+import sizes from './sizes.module.css'
+import type { Size } from './sizes';
 
 export type HeadingLevel = 2 | 3 | 4;
 
@@ -13,7 +15,7 @@ export interface PanelProps {
   headingLevel?: HeadingLevel;
   actions?: ReactNode;
   flush?: boolean;
-  size?: 'small' | 'medium' | 'large';
+  size?: Size;
   children: ReactNode;
 }
 
@@ -22,7 +24,7 @@ export const Panel = ({ title, eyebrow, headingLevel = PAGE_SECTION_LEVEL, actio
   const Heading = `h${headingLevel}` as const;
 
   return (
-    <section className={`${styles.panel} ${styles[size]}`} aria-labelledby={title ? titleId : undefined}>
+    <section className={`${styles.panel} ${sizes[size]}`} aria-labelledby={title ? titleId : undefined}>
       {(title || eyebrow || actions) && (
         <header className={styles.head}>
           <div className={styles.titles}>

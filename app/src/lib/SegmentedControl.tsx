@@ -2,6 +2,8 @@ import { useId, useRef, type KeyboardEvent } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './SegmentedControl.module.css';
+import sizes from './sizes.module.css'
+import type { Size } from './sizes';
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -13,7 +15,7 @@ export interface SegmentedControlProps<T extends string> {
   options: readonly SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  size?: 'medium' | 'large';
+  size?: Size;
 }
 
 const TAB_STOP = 0;
@@ -46,7 +48,7 @@ export const SegmentedControl = <T extends string>({ label, options, value, onCh
   };
 
   return (
-    <div className={`${styles.field} ${styles[size]}`}>
+    <div className={`${styles.field} ${sizes[size]}`}>
       <span id={labelId} className={styles.label}>{label}</span>
       <div role="radiogroup" aria-labelledby={labelId} className={styles.group} onKeyDown={onKeyDown}>
         {options.map((option, index) => (

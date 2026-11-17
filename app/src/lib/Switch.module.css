@@ -21,18 +21,6 @@
   cursor: pointer;
 }
 
-.small {
-  font-size: var(--_charm-size-small);
-}
-
-.medium {
-  font-size: var(--_charm-size-medium);
-}
-
-.large {
-  font-size: var(--_charm-size-large);
-}
-
 .switch:focus-visible {
   outline: var(--_charm-focus-width) solid var(--charm-focus-ring);
   outline-offset: var(--_charm-focus-offset);

@@ -11,18 +11,6 @@
   font-family: var(--charm-font);
 }
 
-.small {
-  font-size: var(--_charm-size-small);
-}
-
-.medium {
-  font-size: var(--_charm-size-medium);
-}
-
-.large {
-  font-size: var(--_charm-size-large);
-}
-
 .label {
   color: var(--charm-text-secondary);
   font-size: max(var(--_charm-text-min), var(--_charm-text-smaller));

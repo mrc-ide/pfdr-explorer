@@ -2,6 +2,8 @@ import { useId, type SelectHTMLAttributes } from 'react';
 import './charm/defaults.css';
 import './charm/constants.css';
 import styles from './Select.module.css';
+import sizes from './sizes.module.css'
+import type { Size } from './sizes';
 
 export interface SelectOption {
   value: string;
@@ -20,7 +22,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   value: string;
   onChange: (value: string) => void;
   options: readonly (SelectOption | SelectGroup)[];
-  size?: 'small' | 'medium' | 'large';
+  size?: Size;
 }
 
 const renderOption = (option: SelectOption) => (
@@ -34,7 +36,7 @@ export const Select = ({ label, value, onChange, options, size = 'medium', id, c
   const selectId = id ?? generatedId;
 
   return (
-    <div className={[styles.field, styles[size], className].filter(Boolean).join(' ')}>
+    <div className={[styles.field, sizes[size], className].filter(Boolean).join(' ')}>
       <label className={styles.label} htmlFor={selectId}>{label}</label>
       <div className={styles.control}>
         <select
