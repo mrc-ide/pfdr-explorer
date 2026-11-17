@@ -28,6 +28,12 @@ const MARKERS = [
   { label: 'crt', options: [{ value: 'crt:76:T', label: 'crt 76T' }] },
 ];
 
+const EXAMPLE_OPTIONS = [
+  { value: 'a', label: 'Option A' },
+  { value: 'b', label: 'Option B' },
+  { value: 'c', label: 'Option C', disabled: true, note: 'Not available' },
+];
+
 const THREE_SIZES = ['small', 'medium', 'large'] as const;
 const TWO_SIZES = ['medium', 'large'] as const;
 const TONES = ['neutral', 'accent', 'warning', 'illustrative'] as const;
@@ -40,6 +46,7 @@ export const Showcase = () => {
   const [surveys, setSurveys] = useState(true);
   const [borders, setBorders] = useState(false);
   const [presses, setPresses] = useState(0);
+  const [example, setExample] = useState('a');
 
   return (
     <main className={styles.page}>
@@ -105,6 +112,7 @@ export const Showcase = () => {
           <Select key={size} size={size} label={`Marker, ${size}`} value={marker} onChange={setMarker} options={MARKERS} />
         ))}
         <Select label="Disabled" value={marker} onChange={setMarker} options={MARKERS} disabled />
+        <Select label="One option disabled, with a note" value={example} onChange={setExample} options={EXAMPLE_OPTIONS} />
       </section>
 
       <section className={styles.stack}>
