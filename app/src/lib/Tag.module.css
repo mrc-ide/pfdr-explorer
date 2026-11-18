@@ -1,0 +1,39 @@
+.tag {
+  --_charm-tag-height: 2em;
+  --_charm-tag-padding-inline: 0.75em;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--_charm-tag-height);
+  padding: 0 var(--_charm-tag-padding-inline);
+  border: var(--_charm-line) solid transparent;
+  border-radius: var(--_charm-radius-pill);
+  font-family: var(--charm-font);
+  font-weight: var(--_charm-weight-medium);
+  line-height: var(--_charm-leading-tight);
+  white-space: nowrap;
+}
+
+.medium {
+  font-size: var(--_charm-size-small);
+}
+
+.large {
+  font-size: var(--_charm-size-medium);
+}
+
+.neutral {
+  background: var(--charm-surface-sunken);
+  color: var(--charm-text-secondary);
+}
+
+.accent {
+  background: var(--charm-accent-bg-selected);
+  color: var(--charm-text-accent);
+}
+
+.warning {
+  background: var(--charm-warning-bg);
+  color: var(--charm-text-warning);
+}

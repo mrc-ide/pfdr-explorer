@@ -1,0 +1,26 @@
+:where(:root) {
+  --_charm-size-small: 0.875rem;
+  --_charm-size-medium: 1rem;
+  --_charm-size-large: 1.125rem;
+  --_charm-text-min: 0.875rem;
+  --_charm-text-smaller: 0.875em;
+
+  --_charm-weight-regular: 400;
+  --_charm-weight-medium: 500;
+  --_charm-weight-semibold: 600;
+  --_charm-leading-tight: 1.35;
+  --_charm-leading-body: 1.5;
+
+  --_charm-control-height: 2.75em;
+  --_charm-radius: 0.25em;
+  --_charm-label-gap: 0.25em;
+
+  --_charm-line: 1px;
+  --_charm-focus-width: 3px;
+  --_charm-focus-offset: 2px;
+  --_charm-radius-pill: 999px;
+  --_charm-radius-circle: 50%;
+
+  --_charm-dur-fast: 120ms;
+  --_charm-ease-standard: cubic-bezier(0.3, 0, 0.2, 1);
+}

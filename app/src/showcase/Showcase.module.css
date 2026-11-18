@@ -1,0 +1,27 @@
+.page {
+  --showcase-w: 60rem;
+
+  display: grid;
+  gap: var(--space-5);
+  max-width: var(--showcase-w);
+  margin-inline: auto;
+  padding: var(--space-4) var(--space-4);
+}
+
+.stack {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.note {
+  margin: 0;
+  color: var(--text-secondary);
+}

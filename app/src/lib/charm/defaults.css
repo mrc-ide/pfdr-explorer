@@ -1,0 +1,28 @@
+:where(:root) {
+  --charm-font: 'Source Sans 3 Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --charm-bg-page: #F3F1EC;
+  --charm-surface-card: #FAF9F6;
+  --charm-surface-sunken: #ECE9E2;
+  --charm-accent-bg-subtle: #E6EFEC;
+  --charm-warning-bg: #F6EAD0;
+  --charm-border-subtle: #DEDAD2;
+  --charm-border-strong: #C9C5BC;
+  --charm-border-panel: #C9C5BC;
+  --charm-border-control: #80858B;
+
+  --charm-text-primary: #22262B;
+  --charm-text-secondary: #4A5058;
+  --charm-text-disabled: #646A71;
+  --charm-text-on-accent: #FFFFFF;
+  --charm-text-accent: #0A4545;
+  --charm-text-warning: #7A4B00;
+
+  --charm-accent: #0F5C5C;
+  --charm-accent-hover: #0A4545;
+  --charm-accent-pressed: #063535;
+  --charm-accent-bg-selected: #E6EFEC;
+  --charm-link: #0F5C5C;
+  --charm-focus-ring: #0A4545;
+  --charm-focus-ring-inner: #FFFFFF;
+}
