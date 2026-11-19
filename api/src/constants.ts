@@ -4,48 +4,6 @@ import config from "./config.ts";
 
 export const adminLevels = ["0", "1", "2"];
 
-export const SURVEY_COLUMNS = {
-  COLLECTION_DAY: "collection_day",
-  COLLECTION_END: "collection_end",
-  COLLECTION_START: "collection_start",
-  CONTRIBUTORS: "contributors",
-  DENOMINATOR: "denominator",
-  GENE: "gene",
-  LAT: "lat",
-  LNG: "lng",
-  MUTATION: "mutation",
-  NUMERATOR: "numerator",
-  PREVALENCE_LOWER: "prevalence_lower",
-  PREVALENCE_UPPER: "prevalence_upper",
-  PREVALENCE: "prevalence",
-  REFERENCE_YEAR: "reference_year",
-  REFERENCE: "reference",
-  SITE_NAME: "site_name",
-  STUDY_ID: "study_id",
-  STUDY_LABEL: "study_label",
-  SURVEY_ID: "survey_id",
-  VARIANT: "variant",
-} as const;
-
-export const PREVALENCE_COLUMNS = {
-  ADMIN0: "admin0",
-  ADMIN1: "admin1",
-  ADMIN2: "admin2",
-  DATE: "date",
-  EXCEEDANCE_1: "exceedance_1",
-  EXCEEDANCE_10: "exceedance_10",
-  EXCEEDANCE_2: "exceedance_2",
-  EXCEEDANCE_5: "exceedance_5",
-  GENE: "gene",
-  LOWER_95: "lower_95",
-  MEAN: "mean",
-  MEDIAN: "median",
-  MUTATION: "mutation",
-  NO_OF_INFORMING_SURVEYS: "no_of_informing_surveys", // Gives a survey id
-  SD: "SD",
-  UPPER_95: "upper_95",
-} as const;
-
 const staveFiles = await readdir(join(config.dataDir, "stave"), { withFileTypes: true });
 export const dataVersions = staveFiles
   .filter(entry => entry.isDirectory())

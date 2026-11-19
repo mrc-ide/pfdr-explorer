@@ -1,7 +1,7 @@
 import type { Request } from 'express';
 import { validateRequiredQueryParams, validateDataRelease, validateDateParams, validateModelRelease, validateAdminLevel } from './validators.ts';
 import type { Column } from '../types.ts';
-import { PREVALENCE_COLUMNS, SURVEY_COLUMNS } from '../constants.ts';
+import { PREVALENCE_COLUMNS, SURVEY_COLUMNS } from '../columns.ts';
 
 export const validateSurveysRequest = (req: Request) => {
   validateRequiredQueryParams(req)
