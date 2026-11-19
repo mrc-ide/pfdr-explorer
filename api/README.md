@@ -203,7 +203,7 @@ Rscript scripts/create_example_model_outputs.R
 3. Fetch admin0 region metadata from [Grout](https://github.com/mrc-ide/grout)
 
 ```sh
-node scripts/fetch_admin0_region_metadata/ts
+node scripts/fetch_admin0_region_metadata.ts
 ```
 
 4. Copy env vars
@@ -212,7 +212,7 @@ node scripts/fetch_admin0_region_metadata/ts
 cp .env.example .env
 ```
 
-`DATA_DIR` in `.env` says where the API reads its data. Leave it as `data` to use the outputs from steps 1 to 3. To use the small test fixtures instead, with none of that set-up. set it to `tests/fixtures/data`.
+`DATA_DIR` in `.env` says where the API reads its data. Leave it as `data` to use the outputs from steps 1 to 3. To use the small test fixtures instead, with none of that set-up, set it to `tests/fixtures/data`.
 
 5. Optionally run tests
 

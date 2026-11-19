@@ -11,7 +11,6 @@ import { endpointConfigs, type Endpoint, type EndpointConfig } from './endpoints
 import { getQueryParamArr, getQueryParamStr } from './query.ts';
 import { AppError } from '../middlewares/errorHandler.ts';
 
-
 interface Admin0RegionMetadata {
   id: string;
   bounds: Bounds;
