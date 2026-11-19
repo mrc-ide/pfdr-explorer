@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     environment: 'node',
+    env: { DATA_DIR: 'tests/fixtures/data' },
     restoreMocks: true,
     coverage: {
       provider: 'v8',

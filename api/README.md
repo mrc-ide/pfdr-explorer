@@ -5,7 +5,7 @@ This repo contains an API serving two kinds of data to be rendered by PfDR Explo
 1) data points of surveys of genetic markers, which come to us stored in the [STAVE](https://mrc-ide.github.io/STAVE/index.html) schema;
 2) and a surface of model outputs imputed from the survey data, which are essentially interpolated prevalences of the different genetic markers per region. These are provided at three levels of granularity: admin levels 0, 1, and 2.
 
-In general, when new releases of model outputs or of survey data are created, this is treated additively: that is, we will intentionally keep around older versions. These may be requested using query parameters `model_release`/`data_release`. Each model release has a dependency on a specific data release. 
+In general, when new releases of model outputs or of survey data are created, this is treated additively: that is, we will intentionally keep around older versions. These may be requested using query parameters `model_release`/`data_release`. Each model release has a dependency on a specific data release.
 
 ## Endpoints
 
@@ -13,7 +13,7 @@ There are three endpoints, all read-only, which provide customisable slices of t
 
 The `/surveys` and `/prevalences` endpoints correspond to the two kinds of data referred to above. They share a common request format* whereby the query parameter `properties` specifies which parquet columns should be returned per entry, while several other query parameters are used to filter the data. To a first approximation, this is translated into an SQL query of the form `SELECT <properties> FROM <parquet file> WHERE <filters>`, though not all filters are expressible as `WHERE` clauses (e.g. they may instead entail reading a different source parquet file). By the use of these query parameters, we enable clients to flexibly thin the response sizes to precisely those rows and columns that are required.
 
-*This is controlled by the const `endpointConfigs` in `src/utils/endpoints.ts`. 
+*This is controlled by the const `endpointConfigs` in `src/utils/endpoints.ts`.
 
 1. /metadata
 
@@ -211,6 +211,8 @@ npx ts-node --esm scripts/fetch_admin0_region_metadata.ts
 ```sh
 cp .env.example .env
 ```
+
+`DATA_DIR` in `.env` says where the API reads its data. Leave it as `data` to use the outputs from steps 1 to 3. To use the small test fixtures instead, with none of that set-up. set it to `tests/fixtures/data`.
 
 5. Optionally run tests
 

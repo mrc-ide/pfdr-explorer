@@ -4,7 +4,7 @@ services:
   api:
     build: api
     environment:
-      NODE_ENV: test
+      DATA_DIR: tests/fixtures/data
       PORT: "3000"
 
   app:
