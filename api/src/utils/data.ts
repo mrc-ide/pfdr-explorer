@@ -3,18 +3,13 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { connection } from '../queryEngine.ts';
 import config from '../config.ts';
-import type { Column } from '../types.ts';
+import type { Bounds, Column } from '../types.ts';
 import { validateRequestedProperties } from './validators.ts';
 import type { DuckDBResultReader } from '@duckdb/node-api';
-import { SURVEY_COLUMNS } from '../constants.ts';
+import { SURVEY_COLUMNS } from '../columns.ts';
 import { endpointConfigs, type Endpoint, type EndpointConfig } from './endpoints.ts';
 import { getQueryParamArr, getQueryParamStr } from './query.ts';
 import { AppError } from '../middlewares/errorHandler.ts';
-
-export interface Bounds {
-  min: { lat: number; lng: number };
-  max: { lat: number; lng: number };
-}
 
 interface Admin0RegionMetadata {
   id: string;

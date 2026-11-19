@@ -1,4 +1,4 @@
-import type { PREVALENCE_COLUMNS, SURVEY_COLUMNS } from "./constants.ts";
+import type { PREVALENCE_COLUMNS, SURVEY_COLUMNS } from "./columns.ts";
 
 export interface Mutation {
   mutation: string;
@@ -6,6 +6,27 @@ export interface Mutation {
     start: string;
     end: string;
   };
+}
+
+export interface Bounds {
+  min: { lat: number; lng: number };
+  max: { lat: number; lng: number };
+}
+
+export interface MetadataResponse {
+  model_releases: string[];
+  prevalences: {
+    version: string;
+    dependencies: {
+      data_release: string;
+      shapefile_source: string;
+    };
+    variants: {
+      gene: string;
+      mutations: Mutation[];
+    }[];
+  };
+  bounds: Bounds;
 }
 
 export type SurveyColumn = typeof SURVEY_COLUMNS[keyof typeof SURVEY_COLUMNS];

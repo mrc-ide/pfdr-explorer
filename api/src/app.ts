@@ -7,6 +7,7 @@ import { validateSurveysRequest, validatePrevalencesRequest } from './utils/endp
 import { executeParquetQuery, prevalencesParquet, surveyDataParquet } from './utils/data.ts';
 import { getMutationsByGene, globalBounds } from './utils/metadata.ts';
 import { getQueryParamStr } from './utils/query.ts';
+import type { MetadataResponse } from './types.ts';
 
 export const createApp = (): Express => {
   const app: Express = express();
@@ -17,7 +18,7 @@ export const createApp = (): Express => {
     const modelVersion = getModelRelease(req.query);
     const modelMetadata = await readModelMetadata(modelVersion);
 
-    res.send({
+    const metadata: MetadataResponse = {
       model_releases: modelVersions,
       prevalences: {
         version: modelVersion,
@@ -28,7 +29,8 @@ export const createApp = (): Express => {
         variants: await getMutationsByGene(modelVersion),
       },
       bounds: await globalBounds(modelVersion),
-    });
+    };
+    res.send(metadata);
   });
 
   app.get('/surveys', async (req: Request, res: Response) => {

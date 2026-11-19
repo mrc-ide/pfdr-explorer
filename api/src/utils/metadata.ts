@@ -1,7 +1,7 @@
 import { connection } from "../queryEngine.ts";
-import type { Mutation } from "../types.ts";
-import { PREVALENCE_COLUMNS } from "../constants.ts";
-import { admin0RegionMetadata, prevalencesParquet, type Bounds } from "./data.ts";
+import type { Bounds, Mutation } from "../types.ts";
+import { PREVALENCE_COLUMNS } from "../columns.ts";
+import { admin0RegionMetadata, prevalencesParquet } from "./data.ts";
 
 // Get unique genetic variants and their associated genes and mutations,
 // as well as the date range for each variant, from the model outputs rectangle.
